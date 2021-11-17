@@ -38,9 +38,11 @@ flutter_icons:
   image_path: "assets/launcher.png"
  #D:\Programme\Flutter\flutter\bin\flutter.bat --no-color pub run flutter_launcher_icons:main
 flutter_native_splash:
- # color: "#42a5f5"
-  background_image: "assets/launcher2.png"
-  fullscreen: true
+  color: "#FFFFFF"
+  image: "assets/launcher.png"
+ # fullscreen: true
   android_gravity: center
   ios_content_mode: center
   #D:\Programme\Flutter\flutter\bin\flutter.bat --no-color pub run flutter_native_splash:create
+
+  #https://docs.flutter.dev/deployment/android
