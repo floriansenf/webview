@@ -99,7 +99,7 @@ class _WebViewKeepAlive extends State<WebViewKeepAlive> with AutomaticKeepAliveC
   bool get wantKeepAlive => true;
 
   Future<String> _getUrl(String url) async {
-    await Future.delayed(Duration(seconds: 1), () {});
+    await Future.delayed(Duration(milliseconds: 500), () {});
     return Future.value(url);
   }
 
@@ -119,7 +119,7 @@ class _WebViewKeepAlive extends State<WebViewKeepAlive> with AutomaticKeepAliveC
             case ConnectionState.none:
               return Text('none');
             case ConnectionState.waiting:
-              return Center(child: CircularProgressIndicator());
+              return Center(child: CircularProgressIndicator(color: Color.fromRGBO(1, 108, 99, 100),));
             case ConnectionState.active:
               return Text('');
             case ConnectionState.done:
