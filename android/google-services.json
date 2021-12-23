@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "236005263636",
+    "project_id": "webview-notifications-64e0b",
+    "storage_bucket": "webview-notifications-64e0b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:236005263636:android:75ada4cace36358d83da01",
+        "android_client_info": {
+          "package_name": "com.webview.leadlr"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "236005263636-nbnvq8uug30veehnmjp817pup1sjteuf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDwkp266Uhw7BMgcDAEa0TrjCPtlL2V8Fg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "236005263636-nbnvq8uug30veehnmjp817pup1sjteuf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,10 +1,27 @@
 import 'dart:async';
 
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
 import 'package:webview_flutter/webview_flutter.dart';
 
-void main() {
+void main() async{
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    statusBarColor: Colors.black,
+  ));
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp();
+  FirebaseMessaging.onBackgroundMessage(_messageHandler);
+  FirebaseMessaging.instance.subscribeToTopic("news");
   runApp(const MyApp());
+}
+Future<void> _messageHandler(RemoteMessage message) async {
+  print('background message ${message.notification!.body}');
 }
 
 class MyApp extends StatelessWidget {
@@ -12,12 +29,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      title: 'Verbrauchercheck',
-      debugShowCheckedModeBanner: false,
+    return const  MaterialApp(
+        title: 'Leadlr',
+        debugShowCheckedModeBanner: false,
+        home: MyHomePage(title: 'Leadlr'),
+      );
 
-      home: MyHomePage(title: 'Verbrauchercheck'),
-    );
   }
 }
 
@@ -35,50 +52,63 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    var height = MediaQuery.of(context).padding.top;
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title,style: TextStyle(color:Color.fromRGBO(252, 186, 57, 100) ),),
-        backgroundColor: Color.fromRGBO(1, 108, 99, 100),
+      resizeToAvoidBottomInset: false,
+    /*  appBar: AppBar(
+        title: Text(widget.title,style: TextStyle(color:Colors.white ),),
+        backgroundColor: Colors.black,
         centerTitle: true,
+      ), */
+      body:Container(
+        margin: EdgeInsets.only(top: height),
+        child: PageView(
+          physics: NeverScrollableScrollPhysics(),
+
+          controller: _pageController,
+          children: <Widget>[
+            WebViewKeepAlive(url: "https://www.leadlr.io/"),
+         //   WebViewKeepAlive(url: "https://www.leadlr.io/package.html"),
+            WebViewKeepAlive(url: "https://www.leadlr.io/dashboard/login"),
+            WebViewKeepAlive(url: "https://www.leadlr.io/contact.php"),
+          ],
+          onPageChanged: (int index) {
+            setState(() {
+              _selectedIndex = index;
+            });
+          },
+        ),
       ),
-      body:PageView(
-        physics: NeverScrollableScrollPhysics(),
-        controller: _pageController,
-        children: <Widget>[
-          WebViewKeepAlive(url: "https://verbrauchercheck.net/"),
-          WebViewKeepAlive(url: "https://verbrauchercheck.net/pkv-optimierung/"),
-          WebViewKeepAlive(url: "https://verbrauchercheck.net/kontakt/"),
-        ],
-        onPageChanged: (int index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Color.fromRGBO(1, 108, 99, 100),
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_add),
-            label: 'Leads',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.contact_page),
-            label: 'Kontakt',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        unselectedItemColor: Colors.white,
-        selectedItemColor: const Color.fromRGBO(252, 186, 57, 100),
-        onTap: (index) {
-          setState(() => _selectedIndex = index);
-          _pageController.jumpToPage(index);
-        },
-      ),
+      bottomNavigationBar:  BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          backgroundColor: Colors.black,
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(CupertinoIcons.house),
+              label: 'Home',
+            ),
+         /*   BottomNavigationBarItem(
+              icon: Icon(CupertinoIcons.option),
+              label: 'Pakete',
+            ), */
+               BottomNavigationBarItem(
+              icon: Icon(CupertinoIcons.arrow_right_circle),
+              label: 'Login',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(CupertinoIcons.envelope),
+              label: 'Kontakt',
+            ),
+          ],
+          currentIndex: _selectedIndex,
+          unselectedItemColor: Colors.white,
+          selectedItemColor: Colors.blue,
+          onTap: (index) {
+            setState(() => _selectedIndex = index);
+            _pageController.jumpToPage(index);
+          },
+        ),
+
     );
   }
 }
@@ -105,6 +135,7 @@ class _WebViewKeepAlive extends State<WebViewKeepAlive> with AutomaticKeepAliveC
 
   @override
   void initState() {
+    registerNotification();
     _future = _getUrl(widget.url);
     super.initState();
   }
@@ -119,7 +150,7 @@ class _WebViewKeepAlive extends State<WebViewKeepAlive> with AutomaticKeepAliveC
             case ConnectionState.none:
               return Text('none');
             case ConnectionState.waiting:
-              return Center(child: CircularProgressIndicator(color: Color.fromRGBO(1, 108, 99, 100),));
+              return Center(child: CircularProgressIndicator(color: Colors.black,));
             case ConnectionState.active:
               return Text('');
             case ConnectionState.done:
@@ -132,12 +163,45 @@ class _WebViewKeepAlive extends State<WebViewKeepAlive> with AutomaticKeepAliveC
                 return WebView(
                   initialUrl: snapshot.data,
                   javascriptMode: JavascriptMode.unrestricted,
+
                 );
               }
           }
         },
     );
   }
+  void registerNotification() async {
+    // https://blog.logrocket.com/flutter-push-notifications-with-firebase-cloud-messaging/#iosint
+    AndroidNotificationDetails notificationAndroidSpecifics = const AndroidNotificationDetails("1","News",icon: null);
+
+    NotificationDetails notificationPlatformSpecifics = NotificationDetails(android: notificationAndroidSpecifics);
+
+    await Firebase.initializeApp();
+
+    var initializationSettingsAndroid = const AndroidInitializationSettings('logo_icon');
+
+    FlutterLocalNotificationsPlugin().initialize( InitializationSettings(
+        android: initializationSettingsAndroid,
+        iOS: null,
+        macOS: null));
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage event) async {
+      print("message recieved");
+      print(event.notification!.body);
+      FlutterLocalNotificationsPlugin().show(1, event.notification!.title, event.notification!.body,notificationPlatformSpecifics);
+
+    });
+    FirebaseMessaging.onMessageOpenedApp.listen((message) {
+      print('Message clicked!');
+
+    });
+
+    FirebaseMessaging.instance.getToken().then((value){
+      print(value);
+    });
+  }
+
+
 }
 
 
