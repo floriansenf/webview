@@ -16,13 +16,11 @@ void main() async{
   WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp();
-  FirebaseMessaging.onBackgroundMessage(_messageHandler);
-  FirebaseMessaging.instance.subscribeToTopic("news");
+
+   FirebaseMessaging.instance.subscribeToTopic("news");
   runApp(const MyApp());
 }
-Future<void> _messageHandler(RemoteMessage message) async {
-  print('background message ${message.notification!.body}');
-}
+
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -176,7 +174,7 @@ class _WebViewKeepAlive extends State<WebViewKeepAlive> with AutomaticKeepAliveC
 
     NotificationDetails notificationPlatformSpecifics = NotificationDetails(android: notificationAndroidSpecifics);
 
-    await Firebase.initializeApp();
+ //   await Firebase.initializeApp();
 
     var initializationSettingsAndroid = const AndroidInitializationSettings('logo_icon');
 
@@ -200,7 +198,6 @@ class _WebViewKeepAlive extends State<WebViewKeepAlive> with AutomaticKeepAliveC
       print(value);
     });
   }
-
 
 }
 
