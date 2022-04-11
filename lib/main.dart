@@ -260,7 +260,7 @@ class _WebViewKeepAlive extends State<WebViewKeepAlive>
               return FutureBuilder(
                   future: Connectivity().checkConnectivity(),
                   builder: (context, AsyncSnapshot<ConnectivityResult> result) {
-                    if (result.data == ConnectivityResult.wifi) {
+                    if (result.data == ConnectivityResult.wifi || result.data == ConnectivityResult.mobile ) {
                       return WebView(
                           initialUrl: snapshot.data,
                           javascriptMode: JavascriptMode.unrestricted);
